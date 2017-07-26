@@ -1,0 +1,55 @@
+@(implicit request: RequestHeader)
+
+@main("Welcome to Play")
+
+<script src="@routes.Assets.versioned("javascripts/jquery-3.1.0.js")" type="text/javascript"></script>
+
+<script type="text/javascript">
+		var socket = new WebSocket("@routes.ChatController.chat.webSocketURL()")
+
+		socket.onopen = function(e){ console.log("已连接") }
+		socket.onmessage = function(e){ $("#chat_box").append("<p>" + e.data + "</p>") }
+
+		$(document).ready(function() {
+
+			$("#btn_join").click(function() {
+				socket.send(JSON.stringify(
+						{ "type" : "join",
+							"username" : $("#txt_join").val() }
+				))
+			});
+
+			$("#btn_talk").click(function() {
+				socket.send(JSON.stringify(
+						{ "type" : "talk",
+							"username" : $("#txt_join").val(),
+							"msg" : $("#txt_talk").val() }
+				))
+			});
+
+			$("#btn_leave").click(function() {
+				socket.send(JSON.stringify(
+						{ "type" : "leave",
+							"username" : $("#txt_join").val() }
+				))
+			});
+
+		});
+
+
+
+</script>
+
+<body>
+
+	输入用户名： <input type = "text" id="txt_join"/>
+	<button id="btn_join">加入</button>
+
+	<div id="chat_box"></div>
+
+	发送消息 &nbsp;&nbsp;：&nbsp;<input type = "text" id="txt_talk"/>
+	<button id="btn_talk">发送</button>
+</body>
+<button id="btn_leave">离开</button>
+
+
